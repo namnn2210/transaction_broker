@@ -8,14 +8,6 @@ def fetch_weather_openweathermap(city_name, api_key):
     humidity = data['main']['humidity']
     return "openweathermap", temperature, humidity
 
-def fetch_weather_weatherstack(city_name, api_key):
-    api_url = f"http://api.weatherstack.com/current?access_key={api_key}&query={city_name}"
-    response = requests.get(api_url)
-    data = response.json()
-    temperature = data['current']['temperature']
-    humidity = data['current']['humidity']
-    return "weatherstack", temperature, humidity
-
 def fetch_weather_weatherapi(city_name, api_key):
     api_url = f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={city_name}"
     response = requests.get(api_url)
@@ -23,3 +15,9 @@ def fetch_weather_weatherapi(city_name, api_key):
     temperature = data['current']['temp_c']
     humidity = data['current']['humidity']
     return "weatherapi", temperature, humidity
+
+def fetch_user_data():
+    api_url = 'https://randomapi.com/api/6de6abfedb24f889e0b5f675edc50deb?fmt=raw&sole'
+    response = requests.get(api_url)
+    data = response.json()
+    return data

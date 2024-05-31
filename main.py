@@ -97,9 +97,13 @@ def fetch_user():
     return {"status": 200, "message": "User data fetched and saved successfully!"}
 
 @app.get("/user", tags=["User Data"])
-def get_user():
+def get_user(limit: int = 10, offset: int = 0):
     """
     Fetches user data from the SQLite database and returns it as a dictionary.
+
+    Args:
+        limit (int, optional): The maximum number of users to fetch. Defaults to 10.
+        offset (int, optional): The number of users to skip before fetching. Defaults to 0.
 
     Returns:
         dict: A dictionary with a status code, the user data, and a success message.
@@ -109,8 +113,8 @@ def get_user():
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
 
-    # Fetch the user data from the database
-    user_data = db.query(User).all()
+    # Fetch the user data from the database with limit and offset
+    user_data = db.query(User).offset(offset).limit(limit).all()
 
     # Return the user data as a dictionary
     return {

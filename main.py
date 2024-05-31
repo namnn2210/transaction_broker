@@ -113,13 +113,25 @@ def get_user(limit: int = 10, offset: int = 0):
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
 
+    # Fetch the total count of users in the database
+    total_count = db.query(User).count()
+
+    # Calculate the total number of pages based on the limit
+    total_pages = (total_count // limit) + (total_count % limit > 0)
+
     # Fetch the user data from the database with limit and offset
     user_data = db.query(User).offset(offset).limit(limit).all()
 
-    # Return the user data as a dictionary
+    # Return the user data as a dictionary along with pagination information
     return {
         "status": 200,
         "data": user_data,
+        "pagination": {
+            "limit": limit,
+            "offset": offset,
+            "total_count": total_count,
+            "total_pages": total_pages
+        },
         "message": "User data fetched successfully!"
     }
 def main():

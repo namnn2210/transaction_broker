@@ -146,7 +146,7 @@ def fetch_products():
 @app.get("/products", tags=["Product Data"])
 def get_products(limit: int = 10, offset: int = 0):
     db = get_database()
-    products = db['products'].find().skip(offset).limit(limit)
+    products = db['products'].find({}, {'_id': 0}).skip(offset).limit(limit)
     return {"status": 200, "data": list(products), "message": "Product data fetched successfully!"}
 
 @app.get("/fetch-cart-data", tags=["Cart Data"])
@@ -159,7 +159,8 @@ def fetch_cart():
 @app.get("/cart", tags=["Cart Data"])
 def get_cart(limit: int = 10, offset: int = 0):
     db = get_database()
-    cart = db['cart'].find().skip(offset).limit(limit)
+    cart = db['cart'].find({}, {'_id': 0}).skip(offset).limit(limit)
+    print(cart)
     return {"status": 200, "data": list(cart), "message": "Cart data fetched successfully!"}
 
     

@@ -21,3 +21,15 @@ def fetch_user_data():
     response = requests.get(api_url)
     data = response.json()
     return data
+
+def fetch_product_data():
+    product_url = 'https://fakestoreapi.com/products'
+    response = requests.get(product_url)
+    data = response.json()
+    return data
+
+def fetch_cart_data():
+    cart_url = 'https://fakestoreapi.com/carts'
+    response = requests.get(cart_url)
+    data = response.json()
+    return data

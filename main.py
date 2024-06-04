@@ -2,8 +2,9 @@ import uvicorn
 from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from database import get_database
 from model import Weather, Base, User
-from fetch import fetch_weather_openweathermap, fetch_weather_weatherapi, fetch_user_data
+from fetch import fetch_weather_openweathermap, fetch_weather_weatherapi, fetch_user_data, fetch_product_data, fetch_cart_data
 
 app = FastAPI()
 
@@ -134,6 +135,34 @@ def get_user(limit: int = 10, offset: int = 0):
         },
         "message": "User data fetched successfully!"
     }
+
+@app.get("/fetch-product-data", tags=["Product Data"])
+def fetch_products():
+    db = get_database()
+    products = fetch_product_data()
+    db['products'].insert_many(products)
+    return {"status": 200, "message": "Product data fetched and saved successfully!"}
+
+@app.get("/products", tags=["Product Data"])
+def get_products(limit: int = 10, offset: int = 0):
+    db = get_database()
+    products = db['products'].find().skip(offset).limit(limit)
+    return {"status": 200, "data": list(products), "message": "Product data fetched successfully!"}
+
+@app.get("/fetch-cart-data", tags=["Cart Data"])
+def fetch_cart():
+    db = get_database()
+    cart = fetch_cart_data()
+    db['cart'].insert_many(cart)
+    return {"status": 200, "message": "Cart data fetched and saved successfully!"}
+
+@app.get("/cart", tags=["Cart Data"])
+def get_cart(limit: int = 10, offset: int = 0):
+    db = get_database()
+    cart = db['cart'].find().skip(offset).limit(limit)
+    return {"status": 200, "data": list(cart), "message": "Cart data fetched successfully!"}
+
+    
 def main():
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 

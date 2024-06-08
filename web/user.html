@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .button-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .image-container img {
+            width: 50px;
+            height: auto;
+        }
+        .pagination-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .table {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">User Data</h1>
+        <div class="button-container text-center">
+            <button id="fetchButton" class="btn btn-primary">Fetch User Data</button>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </div>
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">UUID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">IP Address</th>
+                        <th scope="col">MAC Address</th>
+                        <th scope="col">Website</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- User data will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination">
+                    <!-- Pagination items will be inserted here dynamically -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('fetchButton').addEventListener('click', fetchUserData);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchUserData();
+        });
+
+        const rowsPerPage = 5;
+        let currentPage = 1;
+        let userData = [];
+
+        async function fetchUserData() {
+            const apiEndpoint = 'http://localhost:8000/user';
+
+            try {
+                const response = await fetch(apiEndpoint);
+                const data = await response.json();
+                userData = data.data;
+                displayPage(currentPage);
+                setupPagination();
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+
+        function displayPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = userData.slice(start, end);
+
+            const userTableBody = document.getElementById('userTableBody');
+            userTableBody.innerHTML = ''; // Clear any existing data
+
+            paginatedData.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.uuid}</td>
+                    <td>${user.first_name}</td>
+                    <td>${user.last_name}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.ip_address}</td>
+                    <td>${user.mac_address}</td>
+                    <td><a href="${user.website}" target="_blank">${user.website}</a></td>
+                    <td class="image-container"><img src="${user.image}" alt="${user.first_name} ${user.last_name}"></td>
+                    <td>${new Date(user.created_at).toLocaleString()}</td>
+                `;
+                userTableBody.appendChild(row);
+            });
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(userData.length / rowsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = ''; // Clear existing pagination
+
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = 'page-item';
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                if (i === currentPage) {
+                    li.classList.add('active');
+                }
+                li.addEventListener('click', () => {
+                    currentPage = i;
+                    displayPage(i);
+                    setupPagination();
+                });
+                pagination.appendChild(li);
+            }
+        }
+    </script>
+</body>
+</html>

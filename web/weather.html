@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Weather Data</h1>
+        <div class="button-container text-center">
+            <button id="fetchButton" class="btn btn-primary">Fetch Weather Data</button>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </div>
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">API Name</th>
+                        <th scope="col">Temperature (°C)</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Humidity (%)</th>
+                        <th scope="col">Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="weatherTableBody">
+                    <!-- Weather data will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchWeatherData();
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('fetchButton').addEventListener('click', fetchWeatherData);
+        });
+
+        async function fetchWeatherData() {
+            const apiEndpoint = 'http://localhost:8000/weather';
+
+            try {
+                const response = await fetch(apiEndpoint);
+                const data = await response.json();
+                const weatherTableBody = document.getElementById('weatherTableBody');
+                weatherTableBody.innerHTML = ''; // Clear any existing data
+
+                data.data.forEach(weather => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${weather.api_name}</td>
+                        <td>${weather.temperature}</td>
+                        <td>${weather.city}</td>
+                        <td>${weather.humidity}</td>
+                        <td>${new Date(weather.created_at).toLocaleString()}</td>
+                    `;
+                    weatherTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        }
+    </script>
+</body>
+</html>

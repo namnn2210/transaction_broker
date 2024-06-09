@@ -7,6 +7,7 @@ from models.model import Weather, Base, User
 from applications.cart import fetch_cart_data
 from applications.weather import fetch_weather_openweathermap
 from applications.user import fetch_user_data
+from applications.suitecrm import fetch_account_data, fetch_contact_data, fetch_project_data
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import pytz
@@ -127,6 +128,45 @@ async def get_cart(limit: int = 10, offset: int = 0):
     cart = db['cart'].find({}, {'_id': 0}).skip(offset).limit(limit)
     print(cart)
     return {"status": 200, "data": list(cart), "message": "Cart data fetched successfully!"}
+
+@app.get("/fetch-account-data", tags=["Account Data"])
+async def fetch_account():
+    db = get_database()
+    account = fetch_account_data()
+    db['account'].insert_many(account)
+    return {"status": 200, "message": "Account data fetched and saved successfully!"}
+
+@app.get("/account", tags=["Account Data"])
+async def get_account(limit: int = 10, offset: int = 0):
+    db = get_database()
+    account = db['account'].find({}, {'_id': 0}).skip(offset).limit(limit)
+    return {"status": 200, "data": list(account), "message": "Account data fetched successfully!"}
+
+@app.get("/fetch-contact-data", tags=["Contact Data"])
+async def fetch_contact():
+    db = get_database()
+    contact = fetch_contact_data()
+    db['contact'].insert_many(contact)
+    return {"status": 200, "message": "Contact data fetched and saved successfully!"}
+
+@app.get("/contact", tags=["Contact Data"])
+async def get_contact(limit: int = 10, offset: int = 0):
+    db = get_database()
+    account = db['contact'].find({}, {'_id': 0}).skip(offset).limit(limit)
+    return {"status": 200, "data": list(account), "message": "Contact data fetched successfully!"}
+
+@app.get("/fetch-project-data", tags=["Project Data"])
+async def fetch_project():
+    db = get_database()
+    project = fetch_project_data()
+    db['project'].insert_many(project)
+    return {"status": 200, "message": "Project data fetched and saved successfully!"}
+
+@app.get("/project", tags=["Project Data"])
+async def get_project(limit: int = 10, offset: int = 0):
+    db = get_database()
+    account = db['project'].find({}, {'_id': 0}).skip(offset).limit(limit)
+    return {"status": 200, "data": list(account), "message": "Project data fetched successfully!"}
 
     
 def main():
